@@ -10,6 +10,9 @@
  */
 
 public final class Heap<T extends Comparable> implements IHeap<T> {
+
+
+
     private Node<T> head;
     private Node<T> last;
     private int size;
@@ -55,6 +58,8 @@ public final class Heap<T extends Comparable> implements IHeap<T> {
         }
 
         private void swapUp() {
+            System.out.printf("now running %s here\n", "swapUp");
+
             boolean isLeft = this.isLeftChild();
             Node<T> parent = this.parent;
             if (parent.isLeftChild()) {
@@ -64,13 +69,16 @@ public final class Heap<T extends Comparable> implements IHeap<T> {
             } else {
                 this.parent = null;
             }
-            if (isLeft)
+            if (isLeft) {
                 swapUpAsLeft(parent);
-            else
+                //write(parent.value + " swap", writer);
+            } else {
                 swapUpAsRight(parent);
+            }
         }
 
         private void swapUpAsLeft(Node<T> parent) {
+            System.out.printf("now running %s here\n", "swapUpAsLeft");
             Node<T> temp = parent.right;
             if (this.left != null)
                 this.left.asLeftChild(parent);
@@ -85,6 +93,7 @@ public final class Heap<T extends Comparable> implements IHeap<T> {
         }
 
         private void swapUpAsRight(Node<T> parent) {
+            System.out.printf("now running %s here\n", "swapUpAsRight");
             Node<T> temp = parent.left;
             if (this.left != null)
                 this.left.asLeftChild(parent);
@@ -172,11 +181,11 @@ public final class Heap<T extends Comparable> implements IHeap<T> {
     }
 
     private void upHeap() {
-        if (size == 0) {
-            continue;
-        } else if (this.last.parentIsLarger()) {
+        System.out.printf("now running %s here\n", "upHeap");
+        if (this.last.parentIsLarger()) {
             Node<T> temp = this.last.parent;
             Node<T> iter = this.last;
+            System.out.printf("-->parentisLarger\n");;
             while (iter.parentIsLarger()) {
                 iter.swapUp();
                 if (iter.isRoot()) {
@@ -188,9 +197,8 @@ public final class Heap<T extends Comparable> implements IHeap<T> {
     }
 
     private void downHeap() {
-        if (size == 0) {
-            continue;
-        } else if (this.head.childIsSmaller()) {
+        System.out.printf("now running %s here\n", "downHeap");
+        if (this.head.childIsSmaller()) {
             Node<T> lC = this.head.left;
             Node<T> rC = this.head.right;
             Node<T> least = lC.getSmaller(rC);
@@ -214,40 +222,45 @@ public final class Heap<T extends Comparable> implements IHeap<T> {
 
     @Override
     public T removeMin() {
-        if (this.head == null) return null;
-        T rm = this.head.value;
-        Node<T> tmp_last = this.last;
-        if (this.last.isRoot()) {
-            // case 1: root -> clear and return
-            clear();
-            return rm;
-        } else if (this.last.isRightChild()) {
-            this.last = this.last.parent.left;
-            tmp_last.parent.right = null;
-        } else if (this.last.isLeftMostLeaf()) {
-            this.last = this.head.rightMostLeaf();
-            tmp_last.parent.left = null;
+        if (this.head == null) {
+            return null;
         } else {
-            Node<T> iter = this.last.parent;
-            while (iter.isLeftChild()) {
-                iter = iter.parent;
+            T rm = this.head.value;
+            Node<T> tmp_last = this.last;
+            if (this.last.isRoot()) {
+                clear();
+                return rm;
+            } else if (this.last.isRightChild()) {
+                this.last = this.last.parent.left;
+                tmp_last.parent.right = null;
+            } else if (this.last.isLeftMostLeaf()) {
+                this.last = this.head.rightMostLeaf();
+                tmp_last.parent.left = null;
+            } else {
+                Node<T> iter = this.last.parent;
+                while (iter.isLeftChild()) {
+                    iter = iter.parent;
+                }
+                this.last = iter.parent.left.rightMostLeaf();
+                tmp_last.parent.left = null;
             }
-            this.last = iter.parent.left.rightMostLeaf();
-            tmp_last.parent.left = null;
+            tmp_last.parent = null;
+            if (this.head.left != null) {
+                this.head.left.asLeftChild(tmp_last);
+            } else if (this.head.right != null) {
+                this.head.right.asRightChild(tmp_last);
+            }
+            this.head = tmp_last;
+            downHeap();
+            size--;
+            return rm;            
         }
-        tmp_last.parent = null;
-        if (this.head.left != null)
-            this.head.left.asLeftChild(tmp_last);
-        if (this.head.right != null)
-            this.head.right.asRightChild(tmp_last);
-        this.head = tmp_last;
-        downHeap();
-        size--;
-        return rm;
+
     }
 
     @Override
     public void insert(T entry) {
+        System.out.printf("now running %s here\n", "downHeap");
         Node<T> newNode = new Node(entry);
         if (this.head == null) {
             this.head = newNode;

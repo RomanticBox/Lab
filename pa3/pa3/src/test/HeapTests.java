@@ -249,6 +249,8 @@ public class HeapTests {
             assertTrue(heap.isEmpty());
             assertThat(heap.getSize(), is(0));
 
+            System.out.println("twoEntryHeapMergeTest, descening order complete");
+
             // 무작위 원소의 삽입
             heap.insert(2);
             heap.insert(4);

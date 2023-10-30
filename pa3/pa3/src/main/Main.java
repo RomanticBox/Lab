@@ -10,7 +10,7 @@ public class Main {
 
 		Heap heap = new Heap();
 		Scanner scanner = new Scanner(System.in);
-
+		System.out.println("");
 		System.out.println("You can implement your test code here.");
 	}
 }
